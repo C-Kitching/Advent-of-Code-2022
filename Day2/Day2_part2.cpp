@@ -30,20 +30,35 @@ int main()
     }
 
     // create maps
-    std::unordered_map<char, char> gets_beat_by{{'A', 'Y'}, {'B', 'Z'}, {'C', 'X'}};
+    std::unordered_map<char, char> loses_to{{'A', 'Y'}, {'B', 'Z'}, {'C', 'X'}};
+    std::unordered_map<char, char> wins_to{{'A', 'Z'}, {'B', 'X'}, {'C', 'Y'}};
     std::unordered_map<char, char> draws_with{{'A', 'X'}, {'B', 'Y'}, {'C', 'Z'}};
+    std::unordered_map<char, char> strat{{'X', 'L'}, {'Y', 'D'}, {'Z', 'W'}};
     std::unordered_map<char, int> points{{'X', 1}, {'Y', 2}, {'Z', 3}};
 
     // calculate total points
     int total_points{0};
+    char s;
+    char player_choice;
     for(int i{0}; i < player.size(); i++){
 
-        // add score for shape we selected
-        total_points += points[player[i]];
+        // determine play needed to win lose or draw
+        s = strat[player[i]];
+        if(s == 'W'){
+            total_points += 6;
+            player_choice = loses_to[opponent[i]];
 
-        // add points for result
-        if(gets_beat_by[opponent[i]] == player[i]) total_points += 6;
-        else if(draws_with[opponent[i]] == player[i]) total_points += 3;
+        }
+        else if(s == 'D'){
+            total_points += 3;
+            player_choice = draws_with[opponent[i]];
+        }
+        else{
+            player_choice = wins_to[opponent[i]];
+        }
+
+        // add points for chosen shape
+        total_points += points[player_choice];
     }
 
     // print result
