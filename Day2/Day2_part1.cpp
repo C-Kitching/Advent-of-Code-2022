@@ -15,19 +15,21 @@
 int main()
 {
     // read in data
-    std::string file_path{"/home_th/kitching/Documents/Advent of Code 2022/Day1_data.txt"};
+    std::string file_path{"../Day2/Day2_data.txt"};
     std::ifstream my_file(file_path);
     std::string line;
-    std::vector<std::vector<double>> data;
-    std::vector<double> elf;
+    std::vector<char> opponent, player;
     if (my_file.is_open()) {
+        char o, p;
         while (std::getline(my_file, line)) {
-            if(line.empty()){
-                data.push_back(elf);
-                elf.clear();
-            } else elf.push_back(std::stoi(line));
+            std::stringstream ss(line);
+            ss >> o >> p;
+            opponent.push_back(o);
+            player.push_back(p);
         }
     }
+
+    int x{5};
 
 
 
