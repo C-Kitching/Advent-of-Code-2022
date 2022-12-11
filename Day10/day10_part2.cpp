@@ -35,7 +35,7 @@ int main()
     }
 
     // read in data
-    string file_path{"../Day10/day10_test2.txt"};
+    string file_path{"../Day10/day10_data.txt"};
     ifstream my_file(file_path);
     if(my_file.is_open()) {
         while(getline(my_file, line)) {
@@ -46,6 +46,7 @@ int main()
                 if(it != sprite_pos.end()){
                     CRT[r][cycle] = '#'; 
                 }
+                cycle++;
                 if(cycle == 40){
                     r++;
                     cycle %= 40;
@@ -76,8 +77,7 @@ int main()
 
                 // update sprite pos
                 for(auto& e : sprite_pos){
-                    e += size%40;
-                    if(e < 0) e = 40 + e;
+                    e = (e+size)%40;
                 }
             }
         }  
