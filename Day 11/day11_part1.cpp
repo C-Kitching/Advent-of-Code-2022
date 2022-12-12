@@ -93,7 +93,7 @@ monkeys read_input(const string& file){
             }
 
             // test condition
-            else if(tokens[0] == "Test"){
+            else if(tokens[0] == "Test:"){
                 ret.back().test_arg = stoi(tokens[3]);
             } 
 
@@ -117,18 +117,51 @@ auto process(monkeys monkeys, const bool& part1, const int& rounds){
 
     int mod_product{1};
     for(auto& monkey : monkeys){
-        mode_product *= monkey.test_arg;
+        mod_product *= monkey.test_arg;
     }
 
     for(int r{0}; r < rounds; r++){
-        
+        cout << r << endl;
+        for(auto monkey : monkeys){
+            for(auto it{monkey.items.begin()}; it != monkey.items.end(); it = monkey.items.erase(it)){
+                monkey.inspection_count++;
+
+                // monkey performs operation
+                auto& stress = *it;
+                if(monkey.op == e_add) stress += monkey.op_arg;
+                else if(monkey.op == e_mul) stress *= monkey.op_arg;
+                else if(monkey.op == e_squ) stress *= stress;
+
+                // monkey didnt damage so stress drops
+                if(part1) stress /= 3;
+
+                // pass to next monkey
+                int next_monkey = (stress%monkey.test_arg) == 0 ? monkey.true_num : monkey.false_num;
+                monkeys[next_monkey].items.push_back(stress%mod_product);
+
+            }
+        }
     }
 
+    // count number of inspections by each monkey
+    vector<int> counts;
+    for(auto& monkey : monkeys) counts.push_back(monkey.inspection_count);
+
+    // return product of two most active monkeys
+    sort(counts.begin(), counts.end(), greater<int> ());
+    return counts[0]*counts[1];
 
 }
 
 int main()
 {
+    // read in data
+    auto test_data = read_input("/home_th/kitching/Documents/Advent-of-Code-2022/Day 11/day11_test.txt");
+    //auto real_data = read_input("/home_th/kitching/Documents/Advent-of-Code-2022/Day 11/day11_data.txt");
+
+    // print results
+    cout << process(test_data, true, 20) << endl;
+    //cout << process(real_data, true, 20) << endl;
 
 
     return 0;

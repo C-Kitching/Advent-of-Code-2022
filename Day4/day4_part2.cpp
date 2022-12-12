@@ -26,7 +26,7 @@ int main()
     int count{0};
 
     // read in data
-    string file_path{"../Day4/day4_data.txt"};
+    string file_path{"../Day4/day4_ollie.txt"};
     ifstream my_file(file_path);
     if(my_file.is_open()) {
         while (std::getline(my_file, line)) {
