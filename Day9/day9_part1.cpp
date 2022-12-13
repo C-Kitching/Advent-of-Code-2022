@@ -27,7 +27,7 @@ int main()
     set<pair<int, int>> visited;
 
     // read in data
-    string file_path{"../Day9/day9_data.txt"};
+    string file_path{"../Day9/day9_sam.txt"};
     ifstream my_file(file_path);
     if(my_file.is_open()) {
         while(getline(my_file, line)) {
