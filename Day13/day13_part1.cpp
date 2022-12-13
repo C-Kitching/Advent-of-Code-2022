@@ -20,7 +20,7 @@ using namespace std;
 
 // test if a character is numeric
 bool is_numeric(const char& a){
-  return (a >= '0' && a <= '9');
+  return isdigit(a);
 }
 
 int main()
@@ -30,7 +30,7 @@ int main()
     int list{0};  // index of pairs
 
     // read in first element of pair
-    ifstream file("../Day13/day13_data.txt");
+    ifstream file("C:/Users/Christopher/OneDrive/Desktop/GitHub/Advent-of-Code-2022-1/Day13/day13_data.txt");
     while(getline(file, line1)){
 
         // if at empty line between pairs then skip
