@@ -32,7 +32,7 @@ int main()
     int cnt[2] = {0};
 
     // read in each line
-    // attempt to bubble sort signals to correct indexs
+    // compare each to signals
     ifstream file("../Day13/day13_data.txt");
     while(getline(file, line2)){
 
@@ -41,11 +41,12 @@ int main()
 
         list++;  // track pair index
 
+        // check each signal
         for(int x{0}; x < 2; x++){
 
             line1 = signals[x];
 
-            // parse both pairs
+            // parse signal and comparison
             int i = 0, j = 0;
             while(i < line1.length() && j < line2.length()){
 
@@ -70,7 +71,7 @@ int main()
                     if(stoi(x1) < stoi(x2))
                         cnt[x]++;  // store list index
 
-                    break;  // move to next pair
+                    break;  // move to next signal 
                 }
 
                 // if both char the same, i.e. opening bracker or comma
@@ -112,6 +113,7 @@ int main()
         }
     }
 
+    // calculat result
     cout << (list - cnt[0] + 1)*(list - cnt[1] + 2) << endl;
 
     return 0;
