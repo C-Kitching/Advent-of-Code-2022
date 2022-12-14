@@ -21,7 +21,7 @@ using namespace std;
 #define mp make_pair
 
 // parse string input and return vector of rock coords
-vector<pair<int, int>> parse(string input)
+vector<pair<int, int>> parse(const string& input, int& min_y)
 {
     int i{0};
     vector<pair<int, int>> ret;
@@ -41,6 +41,9 @@ vector<pair<int, int>> parse(string input)
         }
 
         ret.push_back(mp(b, a));  // store as pair
+
+        // check for minimum
+        min_y = max(min_y, b); 
 
         // skip non-numbers
         while(i < input.length() && !isdigit(input[i])) i++;
@@ -76,16 +79,22 @@ vector<vector<int>> read_data(const string& file)
     string line;
     string token;
     vector<vector<int>> cave(1000, vector<int>(1000, 0));
+    int min_y = 0;
 
     // build cave system
     while(getline(fs, line)){
-        vector<pair<int, int>> rock_line = parse(line);
+        vector<pair<int, int>> rock_line = parse(line, min_y);
         build_cave(cave, rock_line);
     }
+
+    // add floor to cave
+    int floor_height = min_y + 2;
+    for(int i{0}; i < 1000; i++) cave[floor_height][i] = 1;
 
     return cave;
 }
 
+// simulate each grain of falling sand
 bool simulate_sand(vector<vector<int>> (&cave), 
     deque<pair<int, int>> (&pos_history))
 {
@@ -117,6 +126,10 @@ bool simulate_sand(vector<vector<int>> (&cave),
         // came to rest
         else{
             cave[sand_pos.first][sand_pos.second] = 2;
+
+            // check if blocking exit 
+            if(sand_pos == pos_history.front()) return true;
+            
             return false;
         }
     }
@@ -125,18 +138,18 @@ bool simulate_sand(vector<vector<int>> (&cave),
 int main()
 {
     // read in data
-    vector<vector<int>> cave = read_data("../Day14/day14_data.txt");
+    vector<vector<int>> cave = read_data("../Day14/day14_test.txt");
 
     // count number of stationary sand grains
     int sand_grains{0};
     deque<pair<int, int>> sand_history;
     sand_history.push_back(mp(0, 500));
     while(true){
+        sand_grains++;
         if(simulate_sand(cave, sand_history)){
             cout << sand_grains << endl;
             return 0;
         }
-        sand_grains++;
     }
 
     return 0;
