@@ -9,6 +9,7 @@
 using namespace std;
 
 #define mp make_pair
+#define ll long long
 
 // class to store sensor beacon pair information
 class sensor_beacon_pair
@@ -67,34 +68,37 @@ int main()
     vector<sensor_beacon_pair> pairs;
     pairs = read_data("../Day15/day15_data.txt");
 
-    // define target
-    int Y = 2000000;
+    // check all heights
+    for(int Y{3214125}; Y <= 4000000; Y++){
 
-    // build ranges
-    vector<pair<int, int>> ranges;
-    for(auto& s : pairs){
-        int side = s.taxi_dist - abs(s.sensor_row - Y);
-        if(side < 0) continue;
-        ranges.emplace_back(s.sensor_col - side, s.sensor_col + side);
-    }
-    sort(ranges.begin(), ranges.end());
+        cout << Y << endl;
 
-    // group ranges
-    int r{0};
-    for(int i{0}; i < (int)ranges.size(); i++){
-        if(ranges[r].second >= ranges[i].first){
-            ranges[r].second = max(ranges[r].second, ranges[i].second);
+        // build ranges
+        vector<pair<int, int>> ranges;
+        for(auto& s : pairs){
+            int side = s.taxi_dist - abs(s.sensor_row - Y);
+            if(side < 0) continue;
+            ranges.emplace_back(s.sensor_col - side, s.sensor_col + side);
         }
-        else{
-            r++;
-            ranges[r] = ranges[i];
+        sort(ranges.begin(), ranges.end());
+
+        // group ranges
+        int r{0};
+        for(int i{0}; i < (int)ranges.size(); i++){
+            if(ranges[r].second >= ranges[i].first){
+                ranges[r].second = max(ranges[r].second, ranges[i].second);
+            }
+            else{
+                r++;
+                ranges[r] = ranges[i];
+            }
+        }
+
+        // if there is more than one range, there is a gap
+        if(r > 0){
+            ll X = ranges[0].second + 1;
+            cout << X*4000000 + Y << endl;
+            return 0;
         }
     }
-
-    // sum all ranges
-    int res{0};
-    for(int i{0}; i <= r; i++) res += ranges[i].second - ranges[i].first + 1;
-    cout << res - 1 << endl;  // one beacon at target 
-
-    return 0;
 }
