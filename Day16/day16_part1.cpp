@@ -5,7 +5,7 @@
 #include <fstream>
 #include <cstring>
 #include <sstream>
-#include <unordered_map>
+#include <map>
 
 using namespace std;
 
@@ -23,8 +23,10 @@ struct valve
 int n_valves{0};
 int n_useful;
 const int STEPS = 30;
-unordered_map<string, int> memory[STEPS];  // memory for dp problem
-unordered_map<string, int> valve_ids;
+int total_rate;
+string all_opened = "";
+map<string, int> memory[STEPS];  // memory for dp problem
+map<string, int> valve_ids;
 vector<valve> valves;
 vector<int> useful_valve_ids;
 int dist[60][60] = {0};  // distances between valves (increase 60 if more valves)
@@ -53,6 +55,7 @@ void read_input(const string& file)
             // valve rate 
             else if(idx == 4){
                 v.rate = stoi(word.substr(5, word.size() - 1));
+                total_rate += v.rate;
 
                 // if useful
                 if(v.rate > 0) useful_valve_ids.push_back(n_valves);
@@ -79,17 +82,20 @@ void read_input(const string& file)
 // bit i is 1 if the ith useful valve is opened, and 0 otherwise
 int find_max_pressure(int time, int curr_valve_name, string opened, const int dist[60][60])
 {
-    if(opened == "111111"){
-        int max_pressure = 
-    }
+    int max_pressure{0};
 
     // if solution to subproblem previously computed
     // dont need to do it again
     if(memory[time].count(opened) == 1) return memory[time][opened];
 
-    // otherwise, compute solution to this subproblem
-    else{
-        int max_pressure{0};
+    // if all valves open before time finished
+    // pressure is released at total rate of all valves
+    else if(opened == all_opened && time + 1 < STEPS){
+        max_pressure = total_rate + find_max_pressure(time+1, curr_valve_name, opened, dist);
+    }
+
+    // still valves to open
+    else if(opened != all_opened){
 
         // iterate over all useful valves to see where to move
         for(int next_valve_id{0}; next_valve_id < n_useful; next_valve_id++){
@@ -123,24 +129,24 @@ int find_max_pressure(int time, int curr_valve_name, string opened, const int di
                 }
             }
         }
-
-        // memorise result and return
-        memory[time][opened] = max_pressure;
-        return max_pressure;
     }
+
+    // memorise result and return
+    memory[time][opened] = max_pressure;
+    return max_pressure;
 
 }
 
 int main()
 {
     // read data
-    read_input("../Day16/day16_test.txt");
+    read_input("C:/Users/Christopher/OneDrive/Desktop/GitHub/Advent-of-Code-2022/Day16/day16_test.txt");
 
     // initalise dist array with large value
     // set initial distance between adjacent valves to 1
     for(int r{0}; r < n_valves; r++){
         for(int c{0}; c < n_valves; c++){
-            dist[r][c] = n_valves + 100;
+            dist[r][c] = n_valves + 1000;
         }
         for(string& valve_name : valves[r].neighbours){
             int valve_id = valve_ids[valve_name];
@@ -160,7 +166,10 @@ int main()
 
     // get zero bitstring corresponding to number of useful valves
     string init = "";
-    for(int x{0}; x < n_useful; x++) init += "0";
+    for(int x{0}; x < n_useful; x++){
+        init += "0";
+        all_opened += "1";
+    }
 
     // find max pressure
     int max_pressure = find_max_pressure(0, valve_ids["AA"], init, dist);
