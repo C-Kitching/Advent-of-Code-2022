@@ -27,7 +27,7 @@ unordered_map<string, int> memory[STEPS];  // memory for dp problem
 unordered_map<string, int> valve_ids;
 vector<valve> valves;
 vector<int> useful_valve_ids;
-int dist[10][10] = {0};  // distances between valves (increase 60 if more valves)
+int dist[60][60] = {0};  // distances between valves (increase 60 if more valves)
 
 // function to read data
 void read_input(const string& file)
@@ -77,8 +77,12 @@ void read_input(const string& file)
 // recursive dp function
 // 'opened' is a bitstring with n_useful bits
 // bit i is 1 if the ith useful valve is opened, and 0 otherwise
-int find_max_pressure(int time, int curr_valve_name, string opened, int dist[10][10])
+int find_max_pressure(int time, int curr_valve_name, string opened, const int dist[60][60])
 {
+    if(opened == "111111"){
+        int max_pressure = 
+    }
+
     // if solution to subproblem previously computed
     // dont need to do it again
     if(memory[time].count(opened) == 1) return memory[time][opened];
@@ -145,7 +149,7 @@ int main()
         }
     }
 
-    // Flloyd-Warshall to find all-pairs shortest path between all valves
+    // Floyd-Warshall to find all-pairs shortest path between all valves
     for(int k{0}; k < n_valves; k++){
         for(int i{0}; i < n_valves; i++){
             for(int j{0}; j < n_valves; j++){
