@@ -5,57 +5,55 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <map>
+#include <unordered_map>
 
 using namespace std;
+
+#define mp make_pair
 
 int dx[6] = {1, -1, 0, 0, 0, 0};
 int dy[6] = {0, 0, 1, -1, 0, 0};
 int dz[6] = {0, 0, 0, 0, 1, -1};
 
-vector<vector<int>> read_data(const string& file)
+map<pair<pair<int, int>, int>, bool> read_data(const string& file)
 {
     ifstream fs(file);
     string line;
     int x, y, z;
     char c;
-    vector<vector<int>> coords;
+    map<pair<pair<int, int>, int>, bool> obsideans;
     while(getline(fs, line)){
         stringstream ss(line);
         ss >> x >> c >> y >> c >> z;
-        coords.push_back({x, y, z});
+        obsideans[mp(mp(x, y), z)] = true;
     }
 
-    return coords;
+    return obsideans;
 }
 
 
 int main()
 {
     // read in data
-    vector<vector<int>> coords = read_data("C:/Users/Christopher/OneDrive/Desktop/GitHub/Advent-of-Code-2022/Day18/day18_test.txt");
+    // map with true is block at that position
+    map<pair<pair<int, int>, int>, bool> obsideans = read_data("../Day18/day18_data.txt");
+    map<pair<pair<int, int>, int>, bool> obsideans_copy = obsideans;
 
-    // loop through blocks
     int res{0};
-    for(int i{0}; i < coords.size(); i++){
-        vector<int> coord = coords[i];
-        res += 6;
-
-        // if no adjacent coords
+    
+    // check all blocks
+    for(auto& o : obsideans){
+        // check all adjacent positions
         for(int i{0}; i < 6; i++){
-            vector<int> adj_coord = {coord[0] + dx[i], coord[1] + dy[i], coord[2] + dz[i]};
-
-            for(int j{0}; j < coords.size(); j++){
-                if(i != j){
-                    if(coords[j] == adj_coord){
-                        res--;
-                        break;
-                    }
-                }
+            // if block at any adjacenct position does not exist
+            if(!obsideans_copy[mp(mp(o.first.first.first + dx[i], o.first.first.second + dy[i]), o.first.second + dz[i])]){
+                res++;
             }
         }
     }
-
-    cout << res;
+ 
+    cout << res << endl;
 
     return 0;
 }
