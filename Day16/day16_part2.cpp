@@ -89,37 +89,35 @@ bool cmp(pair<string, int> &a, pair<string, int> &b)
 // bit i is 1 if the ith useful valve is opened, and 0 otherwise
 void find_max_pressure(int time, int pos, string opened, int dist[60][60])
 {
-
     // compute solution to this subproblem
     int max_pressure = 0;
+
     // iterate over all useful valves
     for (int next = 0; next < n_useful; next++)
     {
         // skip valves that are already open
-        if (opened[next] == '1')
-        {
-            continue;
-        }
-        // for every unopened useful valve, ...
-        else
-        {
+        if (opened[next] == '1') continue;
+        
+        // for every unopened useful valve
+        else{
+
             // check if we can open it without exceeding the time limit
             int next_id = useful_valve_ids[next];
             int next_time = time + dist[pos][next_id] + 1;
-            if (next_time >= STEPS)
-            {
+            if (next_time >= STEPS){
+
                 // if we cannot, then we will have the same amount of pressure
                 // at the end of the 26 minutes.
                 // update the value for this combination of valves opened accordingly
-                if (memory[STEPS - 1].count(opened) != 1)
-                {
+                if (memory[STEPS - 1].count(opened) != 1){
                     memory[STEPS - 1][opened] = 0;
                 }
                 memory[STEPS - 1][opened] = max(memory[STEPS - 1][opened], memory[time][opened]);
             }
-            // if we can open it without exceeding the time limit, ...
-            else
-            {
+
+            // if we can open it without exceeding the time limit
+            else{
+
                 // compute total pressure released by opening that valve next
                 valve next_valve = valves[next_id];
                 int released_pressure = (STEPS - next_time) * next_valve.rate;
@@ -131,27 +129,22 @@ void find_max_pressure(int time, int pos, string opened, int dist[60][60])
                 // update memo table with the pressure released at the given time
                 // with this combination of valves opened
                 int next_pressure = released_pressure + memory[time][opened];
-                if (memory[next_time].count(*next_opened) != 1)
-                {
+                if (memory[next_time].count(*next_opened) != 1){
                     memory[next_time][*next_opened] = 0;
                 }
                 memory[next_time][*next_opened] = max(memory[next_time][*next_opened], next_pressure);
 
                 // if all valves are opened, update value at 26 minutes
                 // no more recursive calls needed
-                if (*next_opened == all_opened)
-                {
-                    if (memory[STEPS - 1].count(all_opened) != 1)
-                    {
+                if (*next_opened == all_opened){
+                    if (memory[STEPS - 1].count(all_opened) != 1){
                         memory[STEPS - 1][all_opened] = 0;
                     }
                     memory[STEPS - 1][all_opened] = memory[next_time][*next_opened];
                 }
+
                 // else, recursively fill in memo table
-                else
-                {
-                    find_max_pressure(next_time, next_id, *next_opened, dist);
-                }
+                else find_max_pressure(next_time, next_id, *next_opened, dist);
             }
         }
     }
