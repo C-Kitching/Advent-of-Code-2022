@@ -25,7 +25,7 @@ int n_useful;
 const int STEPS = 30;
 int total_rate;
 string all_opened = "";
-map<string, int> memory[STEPS];  // memory for dp problem
+map<string, int> memo[STEPS];  // memory for dp problem
 map<string, int> valve_ids;
 vector<valve> valves;
 vector<int> useful_valve_ids;
@@ -80,58 +80,62 @@ void read_input(const string& file)
 // recursive dp function
 // 'opened' is a bitstring with n_useful bits
 // bit i is 1 if the ith useful valve is opened, and 0 otherwise
-int find_max_pressure(int time, int curr_valve_name, string opened, const int dist[60][60])
+int find_max_pressure(int time, int pos, string opened, int dist[60][60])
 {
-    // if solution to subproblem previously computed
-    // dont need to do it again
-    if(memory[time].count(opened) == 1) return memory[time][opened];
 
-    // if all valves open before time finished
-    // pressure is released at total rate of all valves
-    else if(opened == all_opened){
+    // check if solution to this subproblem has been previously computed
+    if (memo[time].count(opened) == 1)
+    {
+        return memo[time][opened];
+    }
+    else if (opened == all_opened)
+    {
         return 0;
     }
-
-    // still valves to open
-    else{
-
-        int max_pressure{0};
-
-        // iterate over all useful valves to see where to move
-        for(int next_valve_id{0}; next_valve_id < n_useful; next_valve_id++){
-
-            // skip opened valves
-            if(opened[next_valve_id] == '1') continue;
-
-            // check all unopened useful vavles
-            else{
-
-                // check if we can open valve without exceeding time limit
-                // time to open is current time + travel time + opening time
-                int next_valve_name = useful_valve_ids[next_valve_id];
-                int next_time = time + dist[curr_valve_name][next_valve_name] + 1;
-                if(next_time >= STEPS) continue;
-
-                // if we can open without exceeding time limit
-                else{
-
+    // otherwise, compute solution to this subproblem
+    else
+    {
+        int max_pressure = 0;
+        // iterate over all useful valves
+        for (int next = 0; next < n_useful; next++)
+        {
+            // skip valves that are already open
+            if (opened[next] == '1')
+            {
+                continue;
+            }
+            // for every unopened useful valve, ...
+            else
+            {
+                // check if we can open it without exceeding the time limit
+                int next_id = useful_valve_ids[next];
+                int next_time = time + dist[pos][next_id] + 1;
+                if (next_time >= STEPS)
+                {
+                    continue;
+                }
+                // if we can open it without exceeding the time limit, ...
+                else
+                {
                     // compute total pressure released by opening that valve next
-                    valve next_valve = valves[next_valve_name];
+                    valve next_valve = valves[next_id];
                     int next_pressure = (STEPS - next_time) * next_valve.rate;
 
-                    // update bitstring since next valve now open
+                    // update the bitstring since this valve is now open
                     string *next_opened = new string(opened);
-                    (*next_opened)[next_valve_id] = '1';
+                    (*next_opened)[next] = '1';
 
                     // recursively compute max pressure
-                    max_pressure = max(max_pressure, next_pressure 
-                        + find_max_pressure(next_time, next_valve_name, *next_opened, dist));
+                    max_pressure = max(max_pressure, next_pressure + find_max_pressure(next_time, next_id, *next_opened, dist));
                 }
             }
         }
-        
-        // memorise result and return
-        memory[time][opened] = max_pressure;
+        // memoize result and return
+        if (memo[time].count(opened) != 1)
+        {
+            memo[time][opened] = 0;
+        }
+        memo[time][opened] = max_pressure;
         return max_pressure;
     }
 }
@@ -139,7 +143,7 @@ int find_max_pressure(int time, int curr_valve_name, string opened, const int di
 int main()
 {
     // read data
-    read_input("C:/Users/Christopher/OneDrive/Desktop/GitHub/Advent-of-Code-2022/Day16/day16_test.txt");
+    read_input("C:/Users/Christopher/OneDrive/Desktop/GitHub/Advent-of-Code-2022/Day16/day16_data.txt");
 
     // initalise dist array with large value
     // set initial distance between adjacent valves to 1
