@@ -2,6 +2,7 @@ import re, numpy
 
 V = lambda *a: numpy.array(a)
 k = lambda a: tuple(sum(a))
+s = lambda a: (a[1][0],a[1][1],a[1][2],a[1][3])
 
 def parse(line):
     i,a,b,c,d,e,f = map(int, re.findall(r'\d+',line))  # read in only numbers
@@ -44,7 +45,7 @@ def run(blueprint, t):
                         material_we_can_produce+material_robot_produces))
 
         # Prune the search queue.
-        todo = sorted(todo_, key=k)[-500:]
+        todo = sorted(todo_, key=s, reverse = True)[:5000]
 
     # return the maximum amount geodes cracked
     return max(todo, key=k)[0][0]
