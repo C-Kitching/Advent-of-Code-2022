@@ -32,5 +32,7 @@ def main():
     file = [n*decryption_key for n in file]
     print("Part 2: {}".format(grove_coords(mix(file, 10))))
 
+    print("Execution time: {:.6f}s".format((time() - start_time)))
+
 if __name__ == "__main__":
     main()
