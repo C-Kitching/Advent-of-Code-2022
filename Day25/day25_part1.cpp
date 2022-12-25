@@ -10,6 +10,7 @@ using namespace std;
 
 #define ll long long
 
+// convert SNAFU number to decimal
 ll SNAFU_to_decimal(string& s)
 {
     char c;
@@ -40,18 +41,45 @@ ll SNAFU_to_decimal(string& s)
     return res;
 }
 
-ll decimal_to_SNAFU(ll& decimal)
-{
-    ll ret;
-    while(decimal >= 0){
-        ll n = decimal%10;
-        decimal /= 10;
+// convert decimal number to SNAFU
+string decimal_to_SNAFU(ll& num){
+    string ret = "";
+    while(num){
+        switch(num%5) {
+            case 0:
+                ret += '0';
+                num /= 5;
+                break;
+            case 1:
+                ret += '1';
+                num /= 5;
+                break;
+            case 2:
+                ret += '2';
+                num /= 5;
+                break;
+            case 3:
+                ret += '=';
+                num /= 5;
+                ++num;
+                break;
+            case 4:
+                ret += '-';
+                num /= 5;
+                ++num;
+                break;
+            default:
+                cout << num % 5 << endl;
+                cout << "Impossible" << endl;
+                break;
+        }
     }
 
-
+    reverse(ret.begin(), ret.end());
 
     return ret;
-}
+} 
+
 
 vector<string> read_data(const string& file_name)
 {
@@ -64,7 +92,7 @@ vector<string> read_data(const string& file_name)
 
 int main()
 {
-    vector<string> SNAFU_nums = read_data("../Day25/day25_test.txt");
+    vector<string> SNAFU_nums = read_data("../Day25/day25_data.txt");
 
     // translate from SNAFU to decimal
     vector<ll> decimal_nums;
@@ -75,7 +103,8 @@ int main()
     for(auto& n : decimal_nums) total_decimal += n;
 
     // convert back to SNAFU
-    ll total_SNAFU = decimal_to_SNAFU(total_decimal)
+    string total_SNAFU = decimal_to_SNAFU(total_decimal);
+    cout << total_SNAFU << endl;
 
     return 0;
 }
